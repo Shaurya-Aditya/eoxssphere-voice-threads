@@ -1,10 +1,10 @@
 
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogIn, Shield } from "lucide-react";
-import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/ui/tabs";
 
 const Auth = () => {
   const navigate = useNavigate();
