@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
+import AdminChat from "./pages/AdminChat";
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/admin-chat" element={<AdminChat />} />
       </Routes>
     </BrowserRouter>
   );
