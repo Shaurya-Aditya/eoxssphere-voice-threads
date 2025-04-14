@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mic, Send, LogOut, UploadCloud, Users } from "lucide-react";
+import APIKeyConfig from '@/components/APIKeyConfig';
 
 interface Message {
   id: string;
@@ -26,9 +27,15 @@ const AdminChat = () => {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  useEffect(() => {
+    const savedKey = localStorage.getItem('chatgpt_api_key');
+    setApiKey(savedKey);
+  }, []);
+
+  const handleSend = async () => {
+    if (!input.trim() || !apiKey) return;
     
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -37,19 +44,38 @@ const AdminChat = () => {
       timestamp: new Date(),
     };
     
-    setMessages([...messages, newMessage]);
+    setMessages(prev => [...prev, newMessage]);
     setInput("");
     
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'user',
+              content: input
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm here to help! This is a demo admin response.",
+        text: data.choices[0].message.content,
         isUser: false,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    } catch (error) {
+      console.error('Error calling ChatGPT API:', error);
+    }
   };
 
   const toggleVoice = () => {
@@ -106,6 +132,11 @@ const AdminChat = () => {
             Logout
           </Button>
         </header>
+
+        {/* API Key Config */}
+        <div className="p-4">
+          <APIKeyConfig />
+        </div>
 
         {/* Messages */}
         <ScrollArea className="flex-1 p-4">
@@ -170,7 +201,7 @@ const AdminChat = () => {
               className="flex-1"
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             />
-            <Button onClick={handleSend}>
+            <Button onClick={handleSend} disabled={!apiKey}>
               <Send className="h-5 w-5" />
             </Button>
           </div>
