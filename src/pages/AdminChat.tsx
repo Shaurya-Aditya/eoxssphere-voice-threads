@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, Send, LogOut, UploadCloud } from "lucide-react";
+import { Mic, Send, LogOut, UploadCloud, Users } from "lucide-react";
 
 interface Message {
   id: string;
@@ -77,8 +76,16 @@ const AdminChat = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Threads Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200">
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-purple-600">Admin Threads</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/user-threads')}
+            className="ml-2"
+          >
+            <Users className="h-4 w-4" />
+          </Button>
         </div>
         <ScrollArea className="h-[calc(100vh-60px)]">
           {threads.map(thread => (
